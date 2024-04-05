@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import Optional
 
@@ -68,36 +69,26 @@ def upload(body: RequestBody, response: Response):
         return filter_none(error_response.dict())
 
     res = SuccessResponse(status="success", data=llm_response)
-    response.status_code = status.HTTP_201_CREATED
+    response.status_code = status.HTTP_200_OK
     return filter_none(res.dict())
 
 
 @app.post("/compare")
 def compare(body: ComparisonBody):
     matches_prompt.set_variables(
-        v5c_content={
-            "name": body.v5c.get("name"),
-            "address": body.v5c.get("address"),
-        },
-        dl_content={
-            "name": f"{body.id.get('2.')} {body.id.get('1.')}",
-            "address": body.id.get("8."),
-        },
+        context=json.dumps({
+            "set1": {
+                "name": body.v5c.get("name"),
+                "address": body.v5c.get("address"),
+            },
+            "set2": {
+                "name": f"{body.id.get('2.')} {body.id.get('1.')}",
+                "address": body.id.get("8."),
+            },
+        }, indent=4),
     )
 
     response = matches_prompt.call()
 
-    res = SuccessResponse(status="success", data={
-        "response": response,
-        "input": {
-            "v5c_content": {
-                "name": body.v5c.get("name"),
-                "address": body.v5c.get("address"),
-            },
-            "dl_content": {
-                "name": f"{body.id.get('2.')} {body.id.get('1.')}",
-                "address": body.id.get("8."),
-            },
-        }
-    })
+    res = SuccessResponse(status="success", data=response)
     return filter_none(res.dict())
