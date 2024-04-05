@@ -1,1 +1,1 @@
-poetry run uvicorn belfast.main:app --host 0.0.0.0 --port 3030
+poetry run uvicorn belfast.main:app --host 0.0.0.0 --port 3030 --reload
