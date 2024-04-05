@@ -39,7 +39,7 @@ class Prompt(BaseModel):
         credentials = service_account.Credentials.from_service_account_file(credentials_file)
         vertexai.init(project=self.project_id, location=self.location, credentials=credentials)
 
-    def call(self, image):
+    def call(self, image = None):
         """
         Prompts the model with the given content and returns the response
 
@@ -53,14 +53,18 @@ class Prompt(BaseModel):
         self.authenticate()
 
         model = GenerativeModel(self.model_id)
+        parts = [content]
 
-        image_part = Part.from_data(
-            mime_type="image/jpeg",
-            data=image,
-        )
+        if image:
+            image_part = Part.from_data(
+                mime_type="image/jpeg",
+                data=image,
+            )
+
+            parts.append(image_part)
 
         response = model.generate_content(
-            [content, image_part],
+            parts,
             generation_config=self.model_dump(
                 by_alias=True,
                 exclude_none=True,

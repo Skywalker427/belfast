@@ -18,11 +18,11 @@ Driving License
 {dl_content}
 
 Response JSON
-{
+{{
    "MATCH": "",
    "REASON": "",
    "CONFIDENCE": "",
-}
+}}
 
 
 - The JSON schema must be followed for the response.
