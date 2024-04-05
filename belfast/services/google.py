@@ -1,3 +1,4 @@
+import json
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part, FinishReason
 import vertexai.preview.generative_models as generative_models
@@ -58,7 +59,7 @@ class Prompt(BaseModel):
             data=image,
         )
 
-        responses = model.generate_content(
+        response = model.generate_content(
             [content, image_part],
             generation_config=self.model_dump(
                 by_alias=True,
@@ -67,4 +68,8 @@ class Prompt(BaseModel):
             ),
         )
 
-        return responses
+        text = response.candidates[0].content.parts[0].text\
+            .replace("```json", "")\
+            .replace("```", "")\
+
+        return json.loads(text)
